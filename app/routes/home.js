@@ -12,7 +12,7 @@ module.exports = [{
   path: '/',
   handler: async (request, h) => {
     const queueSender = new MessageSender('queue-sender', config.queueConfig)
-    await queueSender.sendMessage({ message: { body: request.payload.message } })
+    await queueSender.sendMessage({ body: request.payload.message, correlationId: request.yar.id })
     await queueSender.closeConnection()
     return h.redirect('/result')
   }
