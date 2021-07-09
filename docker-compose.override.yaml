@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  hapi-template:
+  async-web:
     build:
       context: .
       target: development

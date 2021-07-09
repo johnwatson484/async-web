@@ -1,26 +1,27 @@
-const joi = require('joi')
-const envs = ['development', 'test', 'production']
-
-// Define config schema
-const schema = joi.object().keys({
-  port: joi.number().default(3000),
-  env: joi.string().valid(...envs).default(envs[0]),
-  appName: joi.string()
-})
-
-// Build config
-const config = {
+module.exports = {
   port: process.env.PORT,
   env: process.env.NODE_ENV,
-  appName: 'Hapi Template'
+  appName: 'Async Web',
+  queueConfig: {
+    host: process.env.AZURE_SERVICE_BUS_HOST,
+    username: process.env.AZURE_SERVICE_BUS_USERNAME,
+    password: process.env.AZURE_SERVICE_BUS_PASSWORD,
+    address: process.env.AZURE_SERVICE_BUS_QUEUE,
+    type: 'queue'
+  },
+  topicConfig: {
+    host: process.env.AZURE_SERVICE_BUS_HOST,
+    username: process.env.AZURE_SERVICE_BUS_USERNAME,
+    password: process.env.AZURE_SERVICE_BUS_PASSWORD,
+    address: process.env.AZURE_SERVICE_BUS_TOPIC,
+    type: 'topic'
+  },
+  subscriptionConfig: {
+    host: process.env.AZURE_SERVICE_BUS_HOST,
+    username: process.env.AZURE_SERVICE_BUS_USERNAME,
+    password: process.env.AZURE_SERVICE_BUS_PASSWORD,
+    address: process.env.AZURE_SERVICE_BUS_SUBSCRIPTION,
+    topic: process.env.AZURE_SERVICE_BUS_TOPIC,
+    type: 'subscription'
+  }
 }
-
-// Validate config
-const { error, value } = schema.validate(config)
-
-// Throw if config is invalid
-if (error) {
-  throw new Error(`The server config is invalid. ${error.message}`)
-}
-
-module.exports = value

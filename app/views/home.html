@@ -1,5 +1,9 @@
 {% extends '_layout.html' %}
 
 {% block content %}
-  <h1>Hello world</h1>
+  <h1>Send message</h1>
+  <form action="/" method="POST">
+    <input type="text" id="message" name="message"/>
+    <button type="submit">Send</button>
+  </form>
 {% endblock %}
