@@ -5,7 +5,8 @@ module.exports = [{
   method: 'GET',
   path: '/result',
   handler: async (request, h) => {
-    const sessionQueueReceiver = new MessageReceiver({ ...config.sessionQueueConfig, sessionId: request.yar.id })
+    const sessionQueueReceiver = new MessageReceiver(config.sessionQueueConfig)
+    await sessionQueueReceiver.acceptSession(request.yar.id)
     const messages = await sessionQueueReceiver.receiveMessages(1, { maxWaitTimeInMs: 5000 })
     await sessionQueueReceiver.closeConnection()
     if (messages.length) {
