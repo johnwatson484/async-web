@@ -1,35 +1,17 @@
 const MessageBase = require('./message-base')
 
 class MessageReceiver extends MessageBase {
-  constructor (name, config, action) {
+  constructor (name, config, sessionId) {
     super(name, config)
-    this.receiverHandler = this.receiverHandler.bind(this)
-    this.action = action
-    this.receiver = config.type === 'subscription' ? this.sbClient.createReceiver(config.topic, config.address) : this.sbClient.createReceiver(config.address)
-    this.receiver.subscribe({
-      processMessage: this.receiverHandler,
-      processError: async (args) => {
-        this.receiverError(args.error)
-      }
-    })
+    this.receiver = this.sbClient.acceptSession(config.address, sessionId)
   }
 
-  receiverError (error) {
-    console.error(error)
-  }
-
-  async receiverHandler (message) {
-    console.log(`${this.name} received message`)
-    try {
-      await this.action(message)
-      await this.receiver.completeMessage(message)
-    } catch (ex) {
-      console.error(`${this.name} error with message`, ex)
-    }
+  async receiveMessages (count, options) {
+    return (await this.receiver).receiveMessages(count, options)
   }
 
   async closeConnection () {
-    await this.receiver.close()
+    await (await this.receiver).close()
     await super.closeConnection()
   }
 }
