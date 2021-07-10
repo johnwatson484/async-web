@@ -1,4 +1,4 @@
-const { MessageSender } = require('../messaging')
+const { MessageSender } = require('ffc-messaging')
 const config = require('../config')
 
 module.exports = [{
@@ -11,8 +11,15 @@ module.exports = [{
   method: 'POST',
   path: '/',
   handler: async (request, h) => {
-    const queueSender = new MessageSender('queue-sender', config.queueConfig)
-    await queueSender.sendMessage({ body: request.payload.message, correlationId: request.yar.id })
+    const requestMessage = {
+      body: { content: request.payload.message },
+      type: 'session test message',
+      subject: 'test',
+      source: 'async web',
+      correlationId: request.yar.id
+    }
+    const queueSender = new MessageSender(config.queueConfig)
+    await queueSender.sendMessage(requestMessage)
     await queueSender.closeConnection()
     return h.redirect('/result')
   }
