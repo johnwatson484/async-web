@@ -1,10 +1,24 @@
-const { MessageReceiver } = require('ffc-messaging')
+const { MessageSender, MessageReceiver } = require('ffc-messaging')
 const config = require('../config')
 
 module.exports = [{
   method: 'GET',
   path: '/result',
   handler: async (request, h) => {
+    const message = request.yar.get('message')
+    if (!message) {
+      return h.redirect('/')
+    }
+    const requestMessage = {
+      body: { content: message },
+      type: 'session test message',
+      subject: 'test',
+      source: 'async web',
+      correlationId: request.yar.id
+    }
+    const queueSender = new MessageSender(config.queueConfig)
+    await queueSender.sendMessage(requestMessage)
+    await queueSender.closeConnection()
     let result = 'No response'
     const sessionQueueReceiver = new MessageReceiver(config.sessionQueueConfig)
     await sessionQueueReceiver.acceptSession(request.yar.id)
